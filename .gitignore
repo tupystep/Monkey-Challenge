@@ -1,0 +1,10 @@
+# Python
+*.pyc
+*.pyo
+__pycache__/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# PyCharm
+.idea/
