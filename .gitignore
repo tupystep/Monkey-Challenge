@@ -8,3 +8,6 @@ __pycache__/
 
 # PyCharm
 .idea/
+
+# Large data
+data

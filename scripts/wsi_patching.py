@@ -57,11 +57,11 @@ def write_labels(cells: list[tuple[float, float]], cell_size: float, patch_size:
                  class_label: int) -> None:
     """Function writes cell annotations for a single patch to label file."""
     for x, y in cells:
-        x -= cell_size / 2
-        y -= cell_size / 2
-        box_width = (min(x + cell_size, patch_size) - max(x, 0)) / patch_size
-        box_height = (min(y + cell_size, patch_size) - max(y, 0)) / patch_size
-        label_file.write(f'{class_label} {max(x, 0)/patch_size} {max(y, 0)/patch_size} {box_width} {box_height}\n')
+        box_width = (min(x + cell_size / 2, patch_size) - max(x - cell_size / 2, 0)) / patch_size
+        box_height = (min(y + cell_size / 2, patch_size) - max(y - cell_size / 2, 0)) / patch_size
+        x = (max(x - cell_size / 2, 0) / patch_size) + (box_width / 2)
+        y = (max(y - cell_size / 2, 0) / patch_size) + (box_height / 2)
+        label_file.write(f'{class_label} {x} {y} {box_width} {box_height}\n')
 
 
 def patch_image(image_path: Path, patch_size: int, patch_dir: Path, labels_dir: Path, shift_num: int) -> None:
