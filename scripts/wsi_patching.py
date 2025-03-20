@@ -113,3 +113,16 @@ if __name__ == '__main__':
         patch_image(wsi_path, args.patch_size, patch_directory, label_directory, shift_num=4)
 
     autosplit(patch_directory, (0.8, 0.1, 0.1))
+
+    output_dir = args.output_directory / (input_dir.name + str(args.patch_size))
+    if not output_dir.is_relative_to('data'):
+        print('Output directory is not relative to dataset directory - no dataset.yaml will be created')
+    else:
+        with open(output_dir / 'dataset.yaml', 'x') as f:
+            f.write(f'path: {output_dir.relative_to('data')}\n')
+            f.write('train: autosplit_train.txt\n')
+            f.write('val: autosplit_val.txt\n')
+            f.write('test: autosplit_test.txt\n')
+            f.write('\nnames:\n')
+            f.write('  0: lymphocyte\n')
+            f.write('  1: monocyte\n')
