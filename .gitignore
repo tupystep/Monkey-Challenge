@@ -11,3 +11,6 @@ __pycache__/
 
 # Large data
 data
+
+# YOLO weights
+yolo/**/weights
