@@ -119,7 +119,7 @@ if __name__ == '__main__':
         print('Output directory is not relative to dataset directory - no dataset.yaml will be created')
     else:
         with open(output_dir / 'dataset.yaml', 'x') as f:
-            f.write(f'path: {output_dir.relative_to('data')}\n')
+            f.write(f'path: {output_dir.relative_to('data').as_posix()}\n')
             f.write('train: autosplit_train.txt\n')
             f.write('val: autosplit_val.txt\n')
             f.write('test: autosplit_test.txt\n')
