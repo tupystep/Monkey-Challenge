@@ -16,8 +16,7 @@ def draw_patch(patch_path: Path) -> np.ndarray:
             color = (245, 0, 203) if int(line[0]) == 0 else (0, 0, 229)
             line = np.array(line.strip().split()[1:]).astype(float)
             line = np.floor(line / [1, 1, 2, 2] * patch.shape[0]).astype(int)
-            cv2.circle(patch, tuple(line[:2]), radius=4, color=color, thickness=-1)
-            cv2.rectangle(patch, tuple(line[:2] - line[2:]), tuple(line[:2] + line[2:]), color=color, thickness=1)
+            cv2.rectangle(patch, tuple(line[:2] - line[2:]), tuple(line[:2] + line[2:]), color=color, thickness=2)
     return patch
 
 
@@ -50,8 +49,6 @@ def draw_roi(image_path: Path, roi: dict, level: int) -> np.ndarray:
                 c2 = (cell - [left, top] + lymph_half_size).round().astype(int)
                 cv2.rectangle(region, np.maximum(c1, 0), np.minimum(c2, [right - left, bottom - top]),
                               color=(245, 0, 203), thickness=1)
-                cell = np.subtract(cell, [left, top]).round().astype(int)
-                cv2.circle(region, tuple(cell), radius=np.maximum(4 - level, 1), color=(245, 0, 203), thickness=-1)
 
     mono_size =  MONOCYTE_SIZE_UM / float(slide.properties['openslide.mpp-x']) / slide.level_downsamples[level]
     mono_half_size = np.full(2, mono_size / 2)
@@ -64,8 +61,6 @@ def draw_roi(image_path: Path, roi: dict, level: int) -> np.ndarray:
                 c2 = (cell - [left, top] + mono_half_size).round().astype(int)
                 cv2.rectangle(region, np.maximum(c1, 0), np.minimum(c2, [right - left, bottom - top]),
                               color=(0, 0, 229), thickness=1)
-                cell = np.subtract(cell, [left, top]).round().astype(int)
-                cv2.circle(region, tuple(cell), radius=np.maximum(4 - level, 1), color=(0, 0, 229), thickness=-1)
 
     return region
 
@@ -106,7 +101,7 @@ def display_wsi(image_path: Path, wsi_level: int, roi_level: int) -> int:
         cv2.destroyAllWindows()
         if key == ord('q'):
             return key
-        cv2.imshow(roi['name'], image)
+        cv2.imshow(image_path.name + ' ' + roi['name'], image)
 
     key = cv2.waitKey()
     cv2.destroyAllWindows()
