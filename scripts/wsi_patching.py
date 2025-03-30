@@ -10,7 +10,7 @@ from ultralytics.models.sam import SAM2Predictor
 from constants import LYMPHOCYTE_SIZE_UM, MONOCYTE_SIZE_UM
 
 
-def write_yaml(output_dir):
+def write_yaml(output_dir: Path) -> None:
     """Function attempts to create dataset.yaml file."""
     if not output_dir.is_relative_to('data'):
         print('Output directory is not relative to dataset directory - no dataset.yaml will be created')
@@ -22,6 +22,37 @@ def write_yaml(output_dir):
             f.write('\nnames:\n')
             f.write('  0: lymphocyte\n')
             f.write('  1: monocyte\n')
+
+
+def filter_labels(autosplit_path: Path, pure: bool) -> tuple[int, int, int]:
+    """Function filters segmented labels and can leave out basic boxes."""
+    with open(autosplit_path, 'r') as autosplit_file:
+        images = autosplit_file.readlines()
+
+    cell_num = no_detection = big_detection = 0
+    for image in images:
+        label_path = autosplit_path.parent / 'labels' / Path(image).with_suffix('.txt').name
+        with open(label_path, 'r') as label_file:
+            labels = label_file.readlines()
+
+        new_labels = []
+        for label in labels:
+            arr = label.strip().split()
+            if len(arr) == 6:
+                if not pure:
+                    new_labels.append(' '.join(arr[1:]) + '\n')
+                if arr[0] == 'NONE':
+                    no_detection += 1
+                elif arr[0] == 'BIG':
+                    big_detection += 1
+            else:
+                new_labels.append(label)
+            cell_num += 1
+
+        with open(label_path, 'w') as label_file:
+            label_file.writelines(new_labels)
+
+    return cell_num, no_detection, big_detection
 
 
 def get_coverage(roi: dict, patch_size: int, shift_num: int) -> list[tuple[int, int]]:
@@ -67,7 +98,7 @@ def split_cells(annot: dict, coverage: list[tuple[int, int]], patch_size: int) -
     return cells
 
 
-def get_box(cell: tuple[float, float], cell_size: float, patch_size: int, class_label: int) -> str:
+def get_basic_box(cell: tuple[float, float], cell_size: float, patch_size: int, class_label: int) -> str:
     """Function converts coordinates of a cell to basic box label."""
     x, y = cell
     box_width = (min(x + cell_size / 2, patch_size) - max(x - cell_size / 2, 0)) / patch_size
@@ -78,34 +109,30 @@ def get_box(cell: tuple[float, float], cell_size: float, patch_size: int, class_
 
 
 def segment_labels(predictor: SAM2Predictor, cells: list[tuple[float, float]], cell_size: float, patch_size: int,
-                   class_label: int) -> list[str]:
-    """Function converts cell annotations to box labels created using Segment Anything Model 2."""
-    global CELLS, NO_DETECTION, WRONG_DETECTION
-    CELLS += len(cells)
-
+                   seg_size_mult: float, class_label: int) -> list[str]:
+    """Function converts cell annotations to box labels created using SAM 2."""
     labels = []
     for x, y in cells:
         res = predictor(points=[x, y])[0].cpu().numpy()
-        box = None
+        label = None
         for i, xywh in enumerate(res.boxes.xywh):
-            if xywh[2] > SEG_MAX_CELL_SIZE_MULT * cell_size or xywh[3] > SEG_MAX_CELL_SIZE_MULT * cell_size:
+            if xywh[2] > seg_size_mult * cell_size or xywh[3] > seg_size_mult * cell_size:
                 continue
-            box = res.boxes.xywhn[i]
+            box = ' '.join(res.boxes.xywhn[i].astype(str))
+            label = f'{class_label} {box}\n'
+            break
 
-        if box is not None:
-            box = ' '.join(box.astype(str))
-            labels.append(f'{class_label} {box}\n')
-        else:
-            labels.append(get_box((x, y), cell_size, patch_size, class_label))
+        if label is None:
+            label = get_basic_box((x, y), cell_size, patch_size, class_label)
             if len(res) == 0:
-                NO_DETECTION += 1
+                label = 'NONE ' + label
             else:
-                WRONG_DETECTION += 1
-
+                label = 'BIG ' + label
+        labels.append(label)
     return labels
 
 
-def patch_image(image_path: Path, patch_size: int, patch_dir: Path, labels_dir: Path, predictor: SAM2Predictor,
+def patch_image(image_path: Path, patch_size: int, output_dir: Path, predictor: SAM2Predictor, seg_size_mult: float,
                 shift_num: int) -> None:
     """Function splits all ROIs of a WSI into patches and saves them and their annotations."""
     slide = openslide.OpenSlide(image_path)
@@ -127,23 +154,29 @@ def patch_image(image_path: Path, patch_size: int, patch_dir: Path, labels_dir: 
         for i, (x, y) in enumerate(coverage):
             patch = slide.read_region((x, y), 0, (patch_size, patch_size))
             patch_name = image_path.with_suffix('').name + f"_{roi['name'].replace(' ', '')}_{i}.png"
-            patch.convert('RGB').save(patch_dir / patch_name)
+            patch.convert('RGB').save(output_dir / 'images' / patch_name)
 
             if predictor is None:
                 labels = []
                 for cell in lymph_split[i]:
-                    labels.append(get_box(cell, lymph_size, patch_size, class_label=0))
+                    labels.append(get_basic_box(cell, lymph_size, patch_size, class_label=0))
                 for cell in mono_split[i]:
-                    labels.append(get_box(cell, mono_size, patch_size, class_label=1))
+                    labels.append(get_basic_box(cell, mono_size, patch_size, class_label=1))
             else:
-                predictor.set_image(str(patch_dir / patch_name))
-                labels = segment_labels(predictor, lymph_split[i], lymph_size, patch_size, class_label=0)
-                labels.extend(segment_labels(predictor, mono_split[i], mono_size, patch_size, class_label=1))
+                predictor.set_image(str(output_dir / 'images' / patch_name))
+                labels = segment_labels(predictor, lymph_split[i], lymph_size, patch_size, seg_size_mult, class_label=0)
+                labels.extend(segment_labels(predictor, mono_split[i], mono_size, patch_size, seg_size_mult, class_label=1))
                 predictor.reset_image()
 
             label_name = Path(patch_name).with_suffix('.txt')
-            with open(labels_dir / label_name, 'x') as label_file:
+            with open(output_dir / 'labels' / label_name, 'x') as label_file:
                 label_file.writelines(labels)
+
+            with open(output_dir / 'annotations' / label_name, 'x') as annot_file:
+                for cell_x, cell_y in lymph_split[i]:
+                    annot_file.write(f'0 {cell_x} {cell_y}\n')
+                for cell_x, cell_y in mono_split[i]:
+                    annot_file.write(f'1 {cell_x} {cell_y}\n')
 
     slide.close()
 
@@ -154,30 +187,32 @@ if __name__ == '__main__':
     parser.add_argument('output_directory', type=Path, help='Output directory where the dataset will be created')
     parser.add_argument('patch_size', type=int, help='Size of patch side in pixels')
     parser.add_argument('--segment', action='store_true', help='Enable cell segmentation to improve bounding boxes')
+    parser.add_argument('--pure', action='store_true', help='Use only segmented boxes for training data')
     args = parser.parse_args()
 
-    input_dir = args.input_directory
-    patch_directory = args.output_directory / (input_dir.name + str(args.patch_size)) / 'images'
-    patch_directory.mkdir(parents=True, exist_ok=False)
-    label_directory = args.output_directory / (input_dir.name + str(args.patch_size)) / 'labels'
-    label_directory.mkdir(parents=True, exist_ok=False)
+    output_directory = args.output_directory / (args.input_directory.name + str(args.patch_size))
+    (output_directory / 'images').mkdir(parents=True, exist_ok=False)
+    (output_directory / 'labels').mkdir(parents=True, exist_ok=False)
+    (output_directory / 'annotations').mkdir(parents=True, exist_ok=False)
 
     model = None
-    CELLS = NO_DETECTION = WRONG_DETECTION = 0
+    segmentation_mult = 1.5
     if args.segment:
-        SEG_MAX_CELL_SIZE_MULT = 1.5
         model = SAM2Predictor(overrides=dict(model='sam2.1_b.pt', save=False, verbose=False))
         model.get_model()
 
-    image_cnt = len([x for x in input_dir.iterdir()])
-    for wsi_path in tqdm(input_dir.iterdir(), total=image_cnt, desc=f'Patching images in {input_dir}'):
-        patch_image(wsi_path, args.patch_size, patch_directory, label_directory, model, shift_num=4)
+    image_cnt = len([x for x in args.input_directory.iterdir()])
+    for wsi_path in tqdm(args.input_directory.iterdir(), total=image_cnt, desc=f'Patching images in {args.input_directory}'):
+        patch_image(wsi_path, args.patch_size, output_directory, model, segmentation_mult, shift_num=4)
+
+    autosplit(output_directory / 'images', (0.8, 0.2, 0))
+    write_yaml(output_directory)
 
     if args.segment:
+        train_res = filter_labels(output_directory / 'autosplit_train.txt', args.pure)
+        val_res = filter_labels(output_directory / 'autosplit_val.txt', False)
+        result = tuple(x + y for x, y in zip(train_res, val_res))
         print(f'Segmentation results:')
-        print(f'Number of cells in dataset: {CELLS}')
-        print(f'Cells not detected: {NO_DETECTION}')
-        print(f'Wrong detections: {WRONG_DETECTION}')
-
-    autosplit(patch_directory, (0.8, 0.2, 0))
-    write_yaml(args.output_directory / (input_dir.name + str(args.patch_size)))
+        print(f'Number of cells in dataset: {result[0]}')
+        print(f'Cells not detected: {result[1]}')
+        print(f'Wrong detections: {result[2]}')
