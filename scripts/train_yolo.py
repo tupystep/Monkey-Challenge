@@ -12,8 +12,8 @@ if __name__ == '__main__':
     parser.add_argument('--resume', type=bool, default=False)
     args = parser.parse_args()
 
-    project_name = Path('yolo') / args.project / Path(args.model).with_suffix('').name
-    run_name = f'img{args.imgsz}_ep{args.epochs}'
+    project_name = Path('yolo') / args.project
+    run_name = f'img{args.imgsz}_ep{args.epochs}_{Path(args.model).with_suffix("").name}'
 
     settings.update({'datasets_dir': 'data'})
     settings.update({'weights_dir': 'yolo/weights'})
