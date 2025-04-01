@@ -7,16 +7,25 @@ from pathlib import Path
 from constants import LYMPHOCYTE_SIZE_UM, MONOCYTE_SIZE_UM
 
 
-def draw_patch(patch_path: Path) -> np.ndarray:
+def draw_patch(patch_path: Path, draw_dots=True) -> np.ndarray:
     """Function loads patch and draws white blood cell labels."""
     patch = cv2.imread(str(patch_path))
     with open(patch_path.parents[1] / 'labels' / patch_path.with_suffix('.txt').name) as label_file:
-        lines = label_file.readlines()
-        for line in lines:
+        labels = label_file.readlines()
+        for line in labels:
             color = (245, 0, 203) if int(line[0]) == 0 else (0, 0, 229)
             line = np.array(line.strip().split()[1:]).astype(float)
             line = np.floor(line / [1, 1, 2, 2] * patch.shape[0]).astype(int)
             cv2.rectangle(patch, tuple(line[:2] - line[2:]), tuple(line[:2] + line[2:]), color=color, thickness=2)
+
+    if draw_dots:
+        with open(patch_path.parents[1] / 'annotations' / patch_path.with_suffix('.txt').name) as annot_file:
+            annotations = annot_file.readlines()
+            for line in annotations:
+                color = (245, 0, 203) if int(line[0]) == 0 else (0, 0, 229)
+                line = np.array(line.strip().split()[1:]).astype(float)
+                cv2.circle(patch, tuple(np.round(line).astype(int)), radius=3, color=color, thickness=-1)
+
     return patch
 
 
