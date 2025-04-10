@@ -31,7 +31,7 @@ if __name__ == '__main__':
     train_cfg = {'data': args.data, 'epochs': args.epochs, 'imgsz': args.imgsz, 'project': project_name, 'name': run_name,
                  'deterministic': False, 'cos_lr': True, 'patience': args.epochs, 'workers': 0, 'cache': 'disk', 'resume': args.resume}
     aug_cfg = {'hsv_s': 0.4, 'degrees': 15, 'scale': 0, 'flipud': 0.5, 'mosaic': 0, 'erasing': 0, 'close_mosaic': 0}
-    val_cfg = {'conf': 0.001, 'max_det': None, 'augment': True, 'agnostic_nms': True, 'iou': iou[0]}
+    val_cfg = {'conf': 0.001, 'max_det': None, 'agnostic_nms': True, 'iou': iou[0]}
     model = YOLO(args.model)
     model.train(**train_cfg, **aug_cfg, **val_cfg)
 
