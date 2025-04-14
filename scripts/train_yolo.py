@@ -36,10 +36,11 @@ if __name__ == '__main__':
     model.train(**train_cfg, **aug_cfg, **val_cfg)
 
     # Additional YOLO validation
+    model = YOLO(run_directory / 'weights' / 'last.pt')
     for x in iou[1:]:
         print(f'\nValidating yolo with iou={x}')
         val_cfg['iou'] = x
-        model.val(**val_cfg, imgsz=args.imgsz, project=run_directory, name=f'iou{x}')
+        model.val(**val_cfg, imgsz=args.imgsz, workers=0, project=run_directory, name=f'iou{x}')
 
     # Directory files cleanup
     metric_files = list(run_directory.glob('*curve*')) + list(run_directory.glob('*matrix*'))
