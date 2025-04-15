@@ -4,28 +4,27 @@ import cv2
 import json
 import numpy as np
 from pathlib import Path
-from constants import LYMPHOCYTE_SIZE_UM, MONOCYTE_SIZE_UM
+from constants import LYMPHOCYTE_SIZE_UM, MONOCYTE_SIZE_UM, ROI_BGR, LYMPHOCYTE_BGR, MONOCYTE_BGR
 
 
-def draw_patch(patch_path: Path, draw_dots=True) -> np.ndarray:
+def draw_patch(patch_path: Path, draw_labels: bool = True, draw_annot: bool = True) -> np.ndarray:
     """Function loads patch and draws white blood cell labels."""
     patch = cv2.imread(str(patch_path))
-    with open(patch_path.parents[1] / 'labels' / patch_path.with_suffix('.txt').name) as label_file:
-        labels = label_file.readlines()
-        for line in labels:
-            color = (245, 0, 203) if int(line[0]) == 0 else (0, 0, 229)
-            line = np.array(line.strip().split()[1:]).astype(float)
-            line = np.floor(line / [1, 1, 2, 2] * patch.shape[0]).astype(int)
-            cv2.rectangle(patch, tuple(line[:2] - line[2:]), tuple(line[:2] + line[2:]), color=color, thickness=2)
-
-    if draw_dots:
+    if draw_labels:
+        with open(patch_path.parents[1] / 'labels' / patch_path.with_suffix('.txt').name) as label_file:
+            labels = label_file.readlines()
+            for line in labels:
+                color = LYMPHOCYTE_BGR if int(line[0]) == 0 else MONOCYTE_BGR
+                line = np.array(line.strip().split()[1:]).astype(float)
+                line = np.floor(line / [1, 1, 2, 2] * patch.shape[0]).astype(int)
+                cv2.rectangle(patch, tuple(line[:2] - line[2:]), tuple(line[:2] + line[2:]), color=color, thickness=2)
+    if draw_annot:
         with open(patch_path.parents[1] / 'annotations' / patch_path.with_suffix('.txt').name) as annot_file:
             annotations = annot_file.readlines()
             for line in annotations:
-                color = (245, 0, 203) if int(line[0]) == 0 else (0, 0, 229)
+                color = LYMPHOCYTE_BGR if int(line[0]) == 0 else MONOCYTE_BGR
                 line = np.array(line.strip().split()[1:]).astype(float)
                 cv2.circle(patch, tuple(np.round(line).astype(int)), radius=3, color=color, thickness=-1)
-
     return patch
 
 
@@ -45,7 +44,7 @@ def draw_roi(image_path: Path, roi: dict, level: int) -> np.ndarray:
     region = slide.read_region(left_top, level, (right - left + 1, bottom - top + 1))
     region = cv2.cvtColor(np.array(region), cv2.COLOR_RGBA2BGR)
     polygon = np.round(polygon - [left, top]).astype(int).reshape((-1, 1, 2))
-    cv2.polylines(region, [polygon], isClosed=True, color=(223, 67, 3), thickness=2)
+    cv2.polylines(region, [polygon], isClosed=True, color=ROI_BGR, thickness=2)
 
     lymph_size = LYMPHOCYTE_SIZE_UM / float(slide.properties['openslide.mpp-x']) / slide.level_downsamples[level]
     lymph_half_size = np.full(2, lymph_size / 2)
@@ -57,7 +56,7 @@ def draw_roi(image_path: Path, roi: dict, level: int) -> np.ndarray:
                 c1 = (cell - [left, top] - lymph_half_size).round().astype(int)
                 c2 = (cell - [left, top] + lymph_half_size).round().astype(int)
                 cv2.rectangle(region, np.maximum(c1, 0), np.minimum(c2, [right - left, bottom - top]),
-                              color=(245, 0, 203), thickness=1)
+                              color=LYMPHOCYTE_BGR, thickness=1)
 
     mono_size =  MONOCYTE_SIZE_UM / float(slide.properties['openslide.mpp-x']) / slide.level_downsamples[level]
     mono_half_size = np.full(2, mono_size / 2)
@@ -69,7 +68,7 @@ def draw_roi(image_path: Path, roi: dict, level: int) -> np.ndarray:
                 c1 = (cell - [left, top] - mono_half_size).round().astype(int)
                 c2 = (cell - [left, top] + mono_half_size).round().astype(int)
                 cv2.rectangle(region, np.maximum(c1, 0), np.minimum(c2, [right - left, bottom - top]),
-                              color=(0, 0, 229), thickness=1)
+                              color=MONOCYTE_BGR, thickness=1)
 
     return region
 
@@ -91,7 +90,7 @@ def draw_wsi(image_path: Path, level: int) -> np.ndarray:
         for roi in annot['rois']:
             polygon = np.array(roi['polygon']) / slide.level_downsamples[level]
             polygon = np.round(polygon).astype(int).reshape((-1, 1, 2))
-            cv2.polylines(image, [polygon], isClosed=True, color=(223, 67, 3), thickness=2)
+            cv2.polylines(image, [polygon], isClosed=True, color=ROI_BGR, thickness=2)
 
     slide.close()
     return image
