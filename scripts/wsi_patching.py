@@ -11,7 +11,7 @@ from constants import LYMPHOCYTE_SIZE_UM, MONOCYTE_SIZE_UM
 
 
 def write_yaml(output_dir: Path) -> None:
-    """Function attempts to create dataset.yaml file."""
+    """Function attempts to create a dataset.yaml file."""
     if not output_dir.is_relative_to('data'):
         print('Output directory is not relative to dataset directory - no dataset.yaml will be created')
     else:
@@ -68,7 +68,7 @@ def filter_labels(autosplit_path: Path, pure: bool, padding: float) -> tuple[int
 
 
 def get_coverage(roi: dict, patch_size: int, shift_num: int) -> list[tuple[int, int]]:
-    """Function finds coverage of ROI by patches of same size that are entirely contained within the region."""
+    """Function finds coverage of ROI by patches of the same size that are entirely contained within the region."""
     polygon = Polygon(roi['polygon'])
     left, top, right, bottom = polygon.bounds
 
@@ -111,7 +111,7 @@ def split_cells(annot: dict, coverage: list[tuple[int, int]], patch_size: int) -
 
 
 def get_basic_box(cell: tuple[float, float], cell_size: float, patch_size: int, class_label: int) -> str:
-    """Function converts coordinates of a cell to basic box label."""
+    """Function converts coordinates of a cell to a basic bounding box label."""
     x, y = cell
     box_width = (min(x + cell_size / 2, patch_size) - max(x - cell_size / 2, 0)) / patch_size
     box_height = (min(y + cell_size / 2, patch_size) - max(y - cell_size / 2, 0)) / patch_size

@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 from ultralytics import YOLO, settings
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Script trains a YOLO model')
     parser.add_argument('--data', type=str, required=True)
@@ -15,7 +16,7 @@ if __name__ == '__main__':
     parser.add_argument('--resume', type=bool, default=False)
     args = parser.parse_args()
 
-    # Setting up project directory
+    # Setting up the project directory
     project_name = Path('yolo') / args.project
     run_name = f'img{args.imgsz}_ep{args.epochs}_{Path(args.model).with_suffix("").name}{args.name}'
     run_directory = project_name / run_name
