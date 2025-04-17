@@ -1,5 +1,3 @@
-import sys
-import shutil
 import argparse
 import openslide
 import json
@@ -26,34 +24,19 @@ def write_yaml(output_dir: Path) -> None:
             f.write('  1: monocyte\n')
 
 
-def add_padding(input_dir: Path, output_dir: Path, padding: int, patch_size: int) -> None:
-    """Function creates new dataset with added padding to bounding boxes."""
-    print(f'Copying patches from {input_dir} to {output_dir}')
-    shutil.copytree(input_dir / 'images', output_dir / 'images', copy_function=shutil.copy)
-    shutil.copytree(input_dir / 'annotations', output_dir / 'annotations', copy_function=shutil.copy)
-    (output_dir / 'labels').mkdir(parents=True, exist_ok=False)
-    norm_padding = padding / patch_size
+def add_padding(label: str, padding: float) -> str:
+    """Function adds padding to the input bounding box label."""
+    label = np.array(label.strip().split(), dtype=float)
+    cls, x_center, y_center, width, height = label
 
-    patch_cnt = len([x for x in (input_dir / 'labels').iterdir()])
-    for label_path in tqdm((input_dir / 'labels').iterdir(), total=patch_cnt, desc=f'Padding boxes in {input_dir}'):
-        with open(label_path, 'r') as label_file:
-            labels = label_file.readlines()
-        padded_labels = []
-        for label in labels:
-            label = np.array(label.strip().split(), dtype=float)
-            cls, x_center, y_center, width, height = label
-            new_width = (min(x_center + width / 2 + norm_padding, 1) - max(x_center - width / 2 - norm_padding, 0))
-            new_height = (min(y_center + height / 2 + norm_padding, 1) - max(y_center - height / 2 - norm_padding, 0))
-            new_x = max(x_center - width / 2 - norm_padding, 0) + (new_width / 2)
-            new_y = max(y_center - height / 2 - norm_padding, 0) + (new_height / 2)
-            padded_labels.append(f'{int(cls)} {new_x} {new_y} {new_width} {new_height}\n')
-
-        new_label_path = output_dir / 'labels' / label_path.name
-        with open(new_label_path, 'x') as new_label_file:
-            new_label_file.writelines(padded_labels)
+    new_width = min(x_center + width / 2 + padding, 1) - max(x_center - width / 2 - padding, 0)
+    new_height = min(y_center + height / 2 + padding, 1) - max(y_center - height / 2 - padding, 0)
+    new_x = max(x_center - width / 2 - padding, 0) + (new_width / 2)
+    new_y = max(y_center - height / 2 - padding, 0) + (new_height / 2)
+    return f'{int(cls)} {new_x} {new_y} {new_width} {new_height}\n'
 
 
-def filter_labels(autosplit_path: Path, pure: bool) -> tuple[int, int, int]:
+def filter_labels(autosplit_path: Path, pure: bool, padding: float) -> tuple[int, int, int]:
     """Function filters segmented labels and can leave out basic boxes."""
     with open(autosplit_path, 'r') as autosplit_file:
         images = autosplit_file.readlines()
@@ -75,7 +58,7 @@ def filter_labels(autosplit_path: Path, pure: bool) -> tuple[int, int, int]:
                 elif arr[0] == 'BIG':
                     big_detection += 1
             else:
-                new_labels.append(label)
+                new_labels.append(label if padding is None else add_padding(label, padding))
             cell_num += 1
 
         with open(label_path, 'w') as label_file:
@@ -217,18 +200,11 @@ if __name__ == '__main__':
     parser.add_argument('patch_size', type=int, help='Size of patch side in pixels')
     parser.add_argument('--segment', action='store_true', help='Enable cell segmentation to improve bounding boxes')
     parser.add_argument('--pure', action='store_true', help='Use only segmented boxes for training data')
-    parser.add_argument('--padding', type=int, help='Number of pixels used to pad bounding boxes. With this option '
-                        'enabled, the input_directory should already contain patched images and this script will only adjust the labels')
+    parser.add_argument('--padding', type=int, help='Number of pixels used to pad bounding boxes')
     args = parser.parse_args()
 
-    if args.padding is not None:
-        output_directory = args.output_directory / (args.input_directory.name + '_pad' + str(args.padding))
-        add_padding(args.input_directory, output_directory, args.padding, args.patch_size)
-        autosplit(output_directory / 'images', (0.8, 0.2, 0))
-        write_yaml(output_directory)
-        sys.exit()
-
-    output_directory = args.output_directory / (args.input_directory.name + str(args.patch_size))
+    pad_suffix = f'_pad{args.padding}' if args.padding is not None else ''
+    output_directory = args.output_directory / (args.input_directory.name + str(args.patch_size) + pad_suffix)
     (output_directory / 'images').mkdir(parents=True, exist_ok=False)
     (output_directory / 'labels').mkdir(parents=True, exist_ok=False)
     (output_directory / 'annotations').mkdir(parents=True, exist_ok=False)
@@ -247,8 +223,9 @@ if __name__ == '__main__':
     write_yaml(output_directory)
 
     if args.segment:
-        train_res = filter_labels(output_directory / 'autosplit_train.txt', args.pure)
-        val_res = filter_labels(output_directory / 'autosplit_val.txt', False)
+        normalized_padding = None if args.padding is None else args.padding / args.patch_size
+        train_res = filter_labels(output_directory / 'autosplit_train.txt', args.pure, normalized_padding)
+        val_res = filter_labels(output_directory / 'autosplit_val.txt', False, normalized_padding)
         result = tuple(x + y for x, y in zip(train_res, val_res))
         print(f'Segmentation results:')
         print(f'Number of cells in dataset: {result[0]}')
