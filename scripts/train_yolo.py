@@ -1,5 +1,4 @@
 import sys
-import shutil
 import argparse
 from pathlib import Path
 from ultralytics import YOLO, settings
@@ -38,15 +37,14 @@ if __name__ == '__main__':
 
     # Additional YOLO validation
     model = YOLO(run_directory / 'weights' / 'last.pt')
-    for x in iou[1:]:
+    for x in iou:
         print(f'\nValidating yolo with iou={x}')
         val_cfg['iou'] = x
         model.val(**val_cfg, imgsz=args.imgsz, workers=0, project=run_directory, name=f'iou{x}')
 
     # Directory files cleanup
     metric_files = list(run_directory.glob('*curve*')) + list(run_directory.glob('*matrix*'))
-    (run_directory / f'iou{iou[0]}').mkdir(parents=False, exist_ok=False)
     for file in metric_files:
-        shutil.move(file, run_directory / f'iou{iou[0]}')
+        file.unlink()
     for file in run_directory.rglob('val_*jpg'):
         file.unlink()
