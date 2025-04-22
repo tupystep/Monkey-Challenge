@@ -1,0 +1,797 @@
+Sun Apr 20 20:53:21 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.124.06             Driver Version: 570.124.06     CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-PCIE-40GB          On  |   00000000:0B:00.0 Off |                    0 |
+| N/A   23C    P0             32W /  250W |       1MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+New https://pypi.org/project/ultralytics/8.3.111 available 😃 Update with 'pip install -U ultralytics'
+Ultralytics 8.3.88 🚀 Python-3.10.12 torch-2.6.0+cu124 CUDA:0 (NVIDIA A100-PCIE-40GB, 40442MiB)
+[34m[1mengine/trainer: [0mtask=detect, mode=train, model=yolo11m.pt, data=data/pure_seg_box/pas-cpg256/dataset.yaml, epochs=200, time=None, patience=200, batch=16, imgsz=256, save=True, save_period=-1, cache=disk, device=None, workers=0, project=yolo/pure_box, name=img256_ep200_yolo11m, exist_ok=False, pretrained=True, optimizer=auto, verbose=True, seed=0, deterministic=False, single_cls=False, rect=False, cos_lr=True, close_mosaic=0, resume=False, amp=True, fraction=1.0, profile=False, freeze=None, multi_scale=False, overlap_mask=True, mask_ratio=4, dropout=0.0, val=True, split=val, save_json=False, save_hybrid=False, conf=0.001, iou=0.7, max_det=None, half=False, dnn=False, plots=True, source=None, vid_stride=1, stream_buffer=False, visualize=False, augment=False, agnostic_nms=True, classes=None, retina_masks=False, embed=None, show=False, save_frames=False, save_txt=False, save_conf=False, save_crop=False, show_labels=True, show_conf=True, show_boxes=True, line_width=None, format=torchscript, keras=False, optimize=False, int8=False, dynamic=False, simplify=True, opset=None, workspace=None, nms=False, lr0=0.01, lrf=0.01, momentum=0.937, weight_decay=0.0005, warmup_epochs=3.0, warmup_momentum=0.8, warmup_bias_lr=0.1, box=7.5, cls=0.5, dfl=1.5, pose=12.0, kobj=1.0, nbs=64, hsv_h=0.015, hsv_s=0.4, hsv_v=0.4, degrees=15, translate=0.1, scale=0, shear=0.0, perspective=0.0, flipud=0.5, fliplr=0.5, bgr=0.0, mosaic=0, mixup=0.0, copy_paste=0.0, copy_paste_mode=flip, auto_augment=randaugment, erasing=0, crop_fraction=1.0, cfg=None, tracker=botsort.yaml, save_dir=yolo/pure_box/img256_ep200_yolo11m
+Overriding model.yaml nc=80 with nc=2
+
+                   from  n    params  module                                       arguments                     
+  0                  -1  1      1856  ultralytics.nn.modules.conv.Conv             [3, 64, 3, 2]                 
+  1                  -1  1     73984  ultralytics.nn.modules.conv.Conv             [64, 128, 3, 2]               
+  2                  -1  1    111872  ultralytics.nn.modules.block.C3k2            [128, 256, 1, True, 0.25]     
+  3                  -1  1    590336  ultralytics.nn.modules.conv.Conv             [256, 256, 3, 2]              
+  4                  -1  1    444928  ultralytics.nn.modules.block.C3k2            [256, 512, 1, True, 0.25]     
+  5                  -1  1   2360320  ultralytics.nn.modules.conv.Conv             [512, 512, 3, 2]              
+  6                  -1  1   1380352  ultralytics.nn.modules.block.C3k2            [512, 512, 1, True]           
+  7                  -1  1   2360320  ultralytics.nn.modules.conv.Conv             [512, 512, 3, 2]              
+  8                  -1  1   1380352  ultralytics.nn.modules.block.C3k2            [512, 512, 1, True]           
+  9                  -1  1    656896  ultralytics.nn.modules.block.SPPF            [512, 512, 5]                 
+ 10                  -1  1    990976  ultralytics.nn.modules.block.C2PSA           [512, 512, 1]                 
+ 11                  -1  1         0  torch.nn.modules.upsampling.Upsample         [None, 2, 'nearest']          
+ 12             [-1, 6]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
+ 13                  -1  1   1642496  ultralytics.nn.modules.block.C3k2            [1024, 512, 1, True]          
+ 14                  -1  1         0  torch.nn.modules.upsampling.Upsample         [None, 2, 'nearest']          
+ 15             [-1, 4]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
+ 16                  -1  1    542720  ultralytics.nn.modules.block.C3k2            [1024, 256, 1, True]          
+ 17                  -1  1    590336  ultralytics.nn.modules.conv.Conv             [256, 256, 3, 2]              
+ 18            [-1, 13]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
+ 19                  -1  1   1511424  ultralytics.nn.modules.block.C3k2            [768, 512, 1, True]           
+ 20                  -1  1   2360320  ultralytics.nn.modules.conv.Conv             [512, 512, 3, 2]              
+ 21            [-1, 10]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
+ 22                  -1  1   1642496  ultralytics.nn.modules.block.C3k2            [1024, 512, 1, True]          
+ 23        [16, 19, 22]  1   1412566  ultralytics.nn.modules.head.Detect           [2, [256, 512, 512]]          
+YOLO11m summary: 231 layers, 20,054,550 parameters, 20,054,534 gradients, 68.2 GFLOPs
+
+Transferred 643/649 items from pretrained weights
+Freezing layer 'model.23.dfl.conv.weight'
+[34m[1mAMP: [0mrunning Automatic Mixed Precision (AMP) checks...
+[34m[1mAMP: [0mchecks passed ✅
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000001_PAS_CPG_ROI0_20.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000002_PAS_CPG_ROI0_83.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000002_PAS_CPG_ROI1_53.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000002_PAS_CPG_ROI2_36.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000005_PAS_CPG_ROI2_6.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000006_PAS_CPG_ROI1_39.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000006_PAS_CPG_ROI1_43.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000016_PAS_CPG_ROI0_33.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000016_PAS_CPG_ROI1_18.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000018_PAS_CPG_ROI1_45.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000021_PAS_CPG_ROI0_42.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000022_PAS_CPG_ROI1_26.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000029_PAS_CPG_ROI0_43.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000030_PAS_CPG_ROI1_11.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000032_PAS_CPG_ROI0_42.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000034_PAS_CPG_ROI1_17.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000035_PAS_CPG_ROI0_11.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000035_PAS_CPG_ROI2_32.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000037_PAS_CPG_ROI0_49.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000038_PAS_CPG_ROI0_113.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000001_PAS_CPG_ROI1_20.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000009_PAS_CPG_ROI2_4.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000011_PAS_CPG_ROI0_8.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000012_PAS_CPG_ROI1_18.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000014_PAS_CPG_ROI1_35.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000020_PAS_CPG_ROI1_5.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000021_PAS_CPG_ROI0_38.png: 2 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000021_PAS_CPG_ROI1_2.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000023_PAS_CPG_ROI1_5.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000028_PAS_CPG_ROI0_7.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000028_PAS_CPG_ROI0_96.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000032_PAS_CPG_ROI0_38.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000035_PAS_CPG_ROI0_1.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000037_PAS_CPG_ROI0_28.png: 2 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000037_PAS_CPG_ROI0_34.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000037_PAS_CPG_ROI0_39.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000037_PAS_CPG_ROI1_5.png: 2 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000037_PAS_CPG_ROI1_8.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000038_PAS_CPG_ROI0_33.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000039_PAS_CPG_ROI0_21.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000039_PAS_CPG_ROI1_46.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000039_PAS_CPG_ROI1_53.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000039_PAS_CPG_ROI1_66.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000040_PAS_CPG_ROI1_13.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/D_P000003_PAS_CPG_ROI0_9.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/D_P000005_PAS_CPG_ROI1_17.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/D_P000011_PAS_CPG_ROI1_19.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/D_P000011_PAS_CPG_ROI1_8.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/D_P000018_PAS_CPG_ROI1_150.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/D_P000018_PAS_CPG_ROI1_95.png: 1 duplicate labels removed
+[34m[1mtrain: [0mNew cache created: /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/labels.cache
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000011_PAS_CPG_ROI1_6.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000021_PAS_CPG_ROI0_51.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000031_PAS_CPG_ROI0_35.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000002_PAS_CPG_ROI3_31.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000014_PAS_CPG_ROI0_33.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000015_PAS_CPG_ROI0_30.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000017_PAS_CPG_ROI0_33.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000037_PAS_CPG_ROI0_5.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000038_PAS_CPG_ROI0_34.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000039_PAS_CPG_ROI1_31.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/D_P000018_PAS_CPG_ROI0_34.png: 1 duplicate labels removed
+[34m[1mval: [0mNew cache created: /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/labels.cache
+Plotting labels to yolo/pure_box/img256_ep200_yolo11m/labels.jpg... 
+[34m[1moptimizer:[0m 'optimizer=auto' found, ignoring 'lr0=0.01' and 'momentum=0.937' and determining best 'optimizer', 'lr0' and 'momentum' automatically... 
+[34m[1moptimizer:[0m SGD(lr=0.01, momentum=0.9) with parameter groups 106 weight(decay=0.0), 113 weight(decay=0.0005), 112 bias(decay=0.0)
+Image sizes 256 train, 256 val
+Using 0 dataloader workers
+Logging results to [1myolo/pure_box/img256_ep200_yolo11m[0m
+Starting training for 200 epochs...
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.416       0.45      0.345      0.198
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.385      0.438      0.355      0.178
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.332      0.451      0.331      0.182
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.395      0.432      0.341      0.187
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.326      0.427      0.325      0.173
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.377      0.439      0.353      0.214
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.416      0.466       0.38      0.218
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.386      0.448      0.363      0.195
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.431      0.461      0.389      0.235
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.423      0.452      0.384      0.227
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.407      0.475      0.393      0.228
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.437      0.456      0.376      0.225
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415       0.45      0.469      0.405      0.254
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.465      0.475      0.419      0.262
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.448      0.482       0.41      0.254
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.459      0.488      0.416       0.25
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.472       0.49       0.43      0.255
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.463      0.479      0.413      0.256
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.467      0.478      0.412      0.253
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.474      0.487      0.433      0.262
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.458      0.483      0.416      0.255
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.486       0.49      0.433      0.254
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.484      0.503       0.45      0.272
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.492      0.505      0.445       0.27
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.486      0.508       0.45      0.266
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415        0.5      0.511      0.457      0.268
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.493      0.505       0.45      0.277
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.508      0.507      0.458      0.288
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.496      0.512      0.456      0.278
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.507      0.507      0.461      0.279
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.511      0.503      0.457      0.278
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.486      0.506      0.447      0.282
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.499      0.512      0.456      0.283
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.512      0.515      0.465      0.291
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.511      0.525      0.473      0.287
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.515      0.518      0.475      0.292
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.513      0.525      0.474      0.292
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.521      0.525      0.477      0.297
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.519      0.518      0.473      0.298
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.524      0.525      0.478      0.296
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.522      0.524      0.481      0.298
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.526      0.523      0.483      0.299
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.526      0.523      0.486      0.297
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.529      0.522      0.484      0.305
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.533      0.529      0.492      0.308
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.532      0.523      0.487      0.303
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.528      0.529      0.488      0.304
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.535      0.529      0.488      0.307
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.541      0.529      0.493      0.308
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415       0.54      0.528      0.495       0.31
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.542      0.529      0.495      0.313
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.545      0.527      0.498      0.312
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.543      0.531        0.5      0.311
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.546      0.531        0.5      0.314
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.544      0.534      0.499      0.317
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.553      0.533      0.502      0.317
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415       0.55      0.533        0.5      0.315
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.545      0.539      0.498      0.316
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.546      0.533      0.499      0.312
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.544      0.539      0.501      0.316
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.545      0.542      0.506      0.317
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.542       0.54      0.501      0.319
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.548      0.539      0.503       0.32
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.543      0.541      0.504      0.319
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415       0.54      0.539      0.501      0.317
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.546      0.536      0.501      0.318
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.551      0.538      0.503      0.317
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.544      0.504      0.318
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.546      0.541      0.502      0.316
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.545      0.542      0.504      0.317
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.545      0.545      0.506       0.32
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.553      0.537      0.508      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415       0.55      0.537      0.507      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.546      0.542      0.506      0.321
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.549      0.537      0.505       0.32
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.553      0.538      0.506       0.32
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.562      0.534      0.508      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.559      0.534      0.508      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415       0.55      0.536      0.507      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.549      0.537      0.508      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.552      0.536      0.507      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.548      0.539      0.506      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.549      0.537      0.505      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.546      0.542      0.506      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.547      0.542      0.505      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.547      0.543      0.505      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.544      0.544      0.505      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.548      0.542      0.504      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.547      0.544      0.505      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.549      0.542      0.504      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.542      0.547      0.504      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.546      0.548      0.506      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.549      0.544      0.505      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.551       0.54      0.506      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.553      0.538      0.505      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.549      0.543      0.506      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.549      0.541      0.505      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.547      0.543      0.505      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.543      0.544      0.504      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.546       0.54      0.503      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.549      0.538      0.503      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.547       0.54      0.503      0.325
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.548      0.537      0.502      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.545      0.539      0.502      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.545      0.541      0.502      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.545      0.543      0.502      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.546      0.544      0.502      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.545      0.544      0.502      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.548      0.539      0.502      0.325
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.548      0.537      0.501      0.325
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.546      0.539      0.501      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.543      0.542      0.501      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.542      0.543      0.501      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.543      0.543      0.501      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.542      0.543        0.5      0.324
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.543      0.539      0.499      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.543       0.54      0.499      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.544       0.54      0.499      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.542       0.54      0.499      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.545      0.538      0.499      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.543      0.538      0.498      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.541      0.538      0.498      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.541      0.537      0.498      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.538      0.498      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.538      0.539      0.497      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.539      0.498      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.541      0.536      0.497      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.543      0.534      0.497      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.541      0.537      0.497      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.542      0.536      0.497      0.323
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.541      0.537      0.497      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.538      0.496      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.538      0.496      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.538      0.537      0.496      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.537      0.495      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.537      0.495      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.538      0.539      0.495      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.538      0.495      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.538       0.54      0.495      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.539      0.495      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539       0.54      0.495      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415       0.54      0.538      0.495      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415       0.54      0.538      0.495      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.538      0.495      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.538      0.495      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.538      0.494      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.538      0.539      0.494      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.537      0.539      0.494      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.538       0.54      0.494      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.537       0.54      0.494      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.536       0.54      0.493      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.536       0.54      0.493      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.535       0.54      0.493      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.535       0.54      0.493      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.537      0.537      0.492      0.322
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.537      0.537      0.492      0.321
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.537      0.537      0.492      0.321
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.538      0.536      0.492      0.321
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.538      0.535      0.491      0.321
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.538      0.535      0.491      0.321
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.537      0.535      0.491      0.321
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.536      0.536      0.491      0.321
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.536      0.538      0.491      0.321
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.535      0.538      0.491      0.321
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.535      0.539      0.491      0.321
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.535      0.539       0.49      0.321
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.536      0.539       0.49       0.32
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.535       0.54       0.49       0.32
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.534      0.541       0.49       0.32
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.535      0.541       0.49       0.32
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.535      0.539       0.49       0.32
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.535      0.539       0.49       0.32
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.537      0.538      0.489       0.32
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.537      0.537      0.489       0.32
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.537      0.536      0.489       0.32
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.536      0.537      0.488      0.319
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.536      0.537      0.488       0.32
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.537      0.536      0.488      0.319
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.538      0.536      0.488      0.319
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.534      0.488      0.319
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.538      0.535      0.487      0.319
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.538      0.535      0.487      0.319
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.538      0.535      0.488      0.319
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.541      0.532      0.487      0.319
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.541      0.532      0.487      0.319
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415       0.54      0.532      0.487      0.319
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.533      0.487      0.319
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.533      0.487      0.319
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.534      0.487      0.319
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.533      0.487      0.319
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.534      0.486      0.318
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.538      0.533      0.486      0.318
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.533      0.486      0.317
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.532      0.486      0.317
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.532      0.485      0.317
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415       0.54      0.532      0.485      0.317
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.531      0.485      0.317
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539      0.531      0.484      0.316
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539       0.53      0.484      0.317
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+                   all       2139      14415      0.539       0.53      0.484      0.316
+
+200 epochs completed in 4.616 hours.
+Optimizer stripped from yolo/pure_box/img256_ep200_yolo11m/weights/last.pt, 40.5MB
+Optimizer stripped from yolo/pure_box/img256_ep200_yolo11m/weights/best.pt, 40.5MB
+
+Validating yolo/pure_box/img256_ep200_yolo11m/weights/best.pt...
+Ultralytics 8.3.88 🚀 Python-3.10.12 torch-2.6.0+cu124 CUDA:0 (NVIDIA A100-PCIE-40GB, 40442MiB)
+YOLO11m summary (fused): 125 layers, 20,031,574 parameters, 0 gradients, 67.7 GFLOPs
+                   all       2139      14415       0.55      0.542      0.506      0.324
+            lymphocyte       1384       9370      0.649      0.667      0.654      0.437
+              monocyte       1372       5045       0.45      0.417      0.358      0.212
+Speed: 0.0ms preprocess, 0.7ms inference, 0.0ms loss, 0.7ms postprocess per image
+Results saved to [1myolo/pure_box/img256_ep200_yolo11m[0m
+
+Validating yolo with iou=0.7
+Ultralytics 8.3.88 🚀 Python-3.10.12 torch-2.6.0+cu124 CUDA:0 (NVIDIA A100-PCIE-40GB, 40442MiB)
+YOLO11m summary (fused): 125 layers, 20,031,574 parameters, 0 gradients, 67.7 GFLOPs
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000011_PAS_CPG_ROI1_6.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000021_PAS_CPG_ROI0_51.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000031_PAS_CPG_ROI0_35.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000002_PAS_CPG_ROI3_31.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000014_PAS_CPG_ROI0_33.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000015_PAS_CPG_ROI0_30.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000017_PAS_CPG_ROI0_33.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000037_PAS_CPG_ROI0_5.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000038_PAS_CPG_ROI0_34.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000039_PAS_CPG_ROI1_31.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/D_P000018_PAS_CPG_ROI0_34.png: 1 duplicate labels removed
+                   all       2139      14415      0.539      0.529      0.484      0.316
+            lymphocyte       1384       9370      0.649      0.655      0.638      0.435
+              monocyte       1372       5045       0.43      0.404       0.33      0.198
+Speed: 0.0ms preprocess, 1.0ms inference, 0.0ms loss, 0.6ms postprocess per image
+Results saved to [1myolo/pure_box/img256_ep200_yolo11m/iou0.7[0m
+
+Validating yolo with iou=0.3
+Ultralytics 8.3.88 🚀 Python-3.10.12 torch-2.6.0+cu124 CUDA:0 (NVIDIA A100-PCIE-40GB, 40442MiB)
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000011_PAS_CPG_ROI1_6.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000021_PAS_CPG_ROI0_51.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000031_PAS_CPG_ROI0_35.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000002_PAS_CPG_ROI3_31.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000014_PAS_CPG_ROI0_33.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000015_PAS_CPG_ROI0_30.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000017_PAS_CPG_ROI0_33.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000037_PAS_CPG_ROI0_5.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000038_PAS_CPG_ROI0_34.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000039_PAS_CPG_ROI1_31.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/D_P000018_PAS_CPG_ROI0_34.png: 1 duplicate labels removed
+                   all       2139      14415      0.542      0.529      0.488      0.321
+            lymphocyte       1384       9370      0.653      0.653      0.642      0.441
+              monocyte       1372       5045      0.431      0.404      0.335      0.201
+Speed: 0.0ms preprocess, 1.0ms inference, 0.0ms loss, 0.6ms postprocess per image
+Results saved to [1myolo/pure_box/img256_ep200_yolo11m/iou0.3[0m
+
+Validating yolo with iou=0.1
+Ultralytics 8.3.88 🚀 Python-3.10.12 torch-2.6.0+cu124 CUDA:0 (NVIDIA A100-PCIE-40GB, 40442MiB)
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000011_PAS_CPG_ROI1_6.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000021_PAS_CPG_ROI0_51.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/A_P000031_PAS_CPG_ROI0_35.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000002_PAS_CPG_ROI3_31.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000014_PAS_CPG_ROI0_33.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000015_PAS_CPG_ROI0_30.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/B_P000017_PAS_CPG_ROI0_33.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000037_PAS_CPG_ROI0_5.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000038_PAS_CPG_ROI0_34.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/C_P000039_PAS_CPG_ROI1_31.png: 1 duplicate labels removed
+[34m[1mval: [0mWARNING ⚠️ /home/tupystep/monkey_challenge/data/pure_seg_box/pas-cpg256/images/D_P000018_PAS_CPG_ROI0_34.png: 1 duplicate labels removed
+                   all       2139      14415      0.543      0.527      0.488      0.322
+            lymphocyte       1384       9370      0.655      0.651      0.641      0.443
+              monocyte       1372       5045      0.432      0.403      0.334      0.202
+Speed: 0.0ms preprocess, 1.0ms inference, 0.0ms loss, 0.6ms postprocess per image
+Results saved to [1myolo/pure_box/img256_ep200_yolo11m/iou0.1[0m
