@@ -5,7 +5,7 @@ import numpy as np
 from pathlib import Path
 from shapely import Polygon, Point
 from tqdm import tqdm
-from ultralytics.data.utils import autosplit
+from ultralytics.data.split import autosplit
 from ultralytics.models.sam import SAM2Predictor
 from constants import LYMPHOCYTE_SIZE_UM, MONOCYTE_SIZE_UM
 
