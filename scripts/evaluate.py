@@ -214,8 +214,11 @@ def calculate_metrics(ground_truth: list[np.ndarray], preds: list[np.ndarray], c
     return np.array(precision), np.array(recall), np.array(fp_mm2), thresholds
 
 
-def eval_model(dataset: Path, model_path: Path, imgsz: int, iou: float, save_dir: Union[Path, None]) -> None:
+def eval_model(model: YOLO, dataset: Path, pred_arguments: dict, save_dir: Union[Path, None]) -> None:
     """Function calculates and plots all point-wise evaluation metrics for input model on input dataset."""
+    save_dir.mkdir(exist_ok=False)
+
+    # Loading annotations
     ground_truth = []
     gt_class = []
     with open(dataset / 'autosplit_val.txt', 'r') as val_file:
@@ -229,13 +232,13 @@ def eval_model(dataset: Path, model_path: Path, imgsz: int, iou: float, save_dir
                 ground_truth.append(annot[:, 1:])
                 gt_class.append(annot[:, 0])
 
-    model = YOLO(model_path)
-    results = model.predict(dataset / 'autosplit_val.txt', imgsz=imgsz, batch=16, conf=0.001, max_det=None,
-                            agnostic_nms=True, iou=iou, verbose=False)
+    # Getting predictions
+    results = model.predict(dataset / 'autosplit_val.txt', **pred_arguments, verbose=False)
     preds = [res.cpu().numpy().boxes.xywh[:, :2] for res in results]
     conf = [res.cpu().numpy().boxes.conf for res in results]
     pred_class = [res.cpu().numpy().boxes.cls for res in results]
 
+    # Calculating metrics for different classes
     metrics = {'precisions': [], 'recalls': [], 'fp_mm2': [], 'confidences': [], 'names': []}
     eval_configs = [
         {'name': 'lymphocytes', 'class_id': 0, 'margin': 4 / IMAGE_MPP},
@@ -248,11 +251,11 @@ def eval_model(dataset: Path, model_path: Path, imgsz: int, iou: float, save_dir
             class_preds = [pred[pred_cls == cfg['class_id']] for pred, pred_cls in zip(preds, pred_class)]
             class_conf = [cf[pred_cls == cfg['class_id']] for cf, pred_cls in zip(conf, pred_class)]
             precision, recall, fp_mm2, confidence = calculate_metrics(
-                class_gt, class_preds, class_conf, patch_size=imgsz, margin=cfg['margin']
+                class_gt, class_preds, class_conf, patch_size=pred_arguments['imgsz'], margin=cfg['margin']
             )
         else:
             precision, recall, fp_mm2, confidence = calculate_metrics(
-                ground_truth, preds, conf, patch_size=imgsz, margin=cfg['margin']
+                ground_truth, preds, conf, patch_size=pred_arguments['imgsz'], margin=cfg['margin']
             )
 
         metrics['precisions'].append(precision)
@@ -261,24 +264,26 @@ def eval_model(dataset: Path, model_path: Path, imgsz: int, iou: float, save_dir
         metrics['confidences'].append(confidence)
         metrics['names'].append(cfg['name'])
 
+    # Plotting metric curves
     plot_froc_curves(metrics, save_dir)
     plot_pr_curves(metrics, save_dir)
     plot_f1_curves(metrics, save_dir)
     plot_p_curves(metrics, save_dir)
     plot_r_curves(metrics, save_dir)
 
+    # Plotting confusion matrix
     matrix_preds = [pred[cf >= 0.25] for pred, cf in zip(preds, conf)]
     matrix_pred_class = [pred_cls[cf >= 0.25] for pred_cls, cf in zip(pred_class, conf)]
     plot_confusion_matrix(ground_truth, gt_class, matrix_preds, matrix_pred_class, save_dir)
 
 
-import re
 if __name__ == '__main__':
-    models = Path('yolo').rglob('img*ep*yolo*')
-    for model_name in models:
-        print(f'\nValidating {model_name}', flush=True)
+    import re
+    from tqdm import tqdm
 
-        image_size = int(re.search(r'img(\d{3})_', str(model_name)).group(1))
+    models = Path('yolo').rglob('img*ep*yolo*')
+    for model_name in tqdm(list(models)):
+        imgsz = int(re.search(r'img(\d{3})_', str(model_name)).group(1))
         staining = 'ihc' if 'ihc' in str(model_name) else 'pas-cpg'
         if 'basic_box' in str(model_name):
             box = 'basic_box'
@@ -289,12 +294,12 @@ if __name__ == '__main__':
         else:
             raise ValueError('Invalid model name')
 
-        dataset_path = Path(f'data/{box}/{staining}{image_size}')
-        if image_size == 640:
+        dataset_path = Path(f'data/{box}/{staining}{imgsz}')
+        if imgsz == 640:
             p_size = int(re.search(r'yolo11m_p(\d{3})', str(model_name)).group(1))
             dataset_path = Path(f'data/{box}/{staining}{p_size}')
 
-        for nms in [0.7, 0.3, 0.1]:
-            res_dir = model_name / f'point_nms{nms}'
-            res_dir.mkdir(exist_ok=False)
-            eval_model(dataset_path, model_name / 'weights' / 'last.pt', image_size, nms, res_dir)
+        for iou in [0.7, 0.3, 0.1]:
+            yolo_model = YOLO(model_name / 'weights' / 'last.pt')
+            val_cfg = {'imgsz': imgsz, 'batch': 16, 'conf': 0.001, 'max_det': None, 'agnostic_nms': True, 'iou': iou}
+            eval_model(model=yolo_model, dataset=dataset_path, pred_arguments=val_cfg, save_dir=model_name / f'point_nms{iou}')
