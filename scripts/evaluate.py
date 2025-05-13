@@ -1,3 +1,4 @@
+import re
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -6,6 +7,7 @@ from typing import Union
 from scipy.spatial.distance import cdist
 from sklearn.metrics import auc
 from ultralytics import YOLO
+from ultralytics.engine.results import Results
 from constants import IMAGE_MPP
 
 
@@ -214,9 +216,14 @@ def calculate_metrics(ground_truth: list[np.ndarray], preds: list[np.ndarray], c
     return np.array(precision), np.array(recall), np.array(fp_mm2), thresholds
 
 
-def eval_model(model: YOLO, dataset: Path, pred_arguments: dict, save_dir: Union[Path, None]) -> None:
+def eval_model(model: YOLO, dataset: Path, pred_arguments: dict, save_dir: Union[Path, None],
+               results: list[Results] = None) -> None:
     """Function calculates and plots all point-wise evaluation metrics for input model on input dataset."""
     save_dir.mkdir(exist_ok=False)
+    matches = re.findall(r'(?<!\d)\d{3}(?!\d)', str(dataset))
+    if len(matches) != 1:
+        raise RuntimeError(f'Cannot extract patch size from dataset {dataset}')
+    patch_size = int(matches[0])
 
     # Loading annotations
     ground_truth = []
@@ -233,7 +240,8 @@ def eval_model(model: YOLO, dataset: Path, pred_arguments: dict, save_dir: Union
                 gt_class.append(annot[:, 0])
 
     # Getting predictions
-    results = model.predict(dataset / 'autosplit_val.txt', **pred_arguments, verbose=False)
+    if results is None:
+        results = model.predict(dataset / 'autosplit_val.txt', **pred_arguments, verbose=False)
     preds = [res.cpu().numpy().boxes.xywh[:, :2] for res in results]
     conf = [res.cpu().numpy().boxes.conf for res in results]
     pred_class = [res.cpu().numpy().boxes.cls for res in results]
@@ -251,11 +259,11 @@ def eval_model(model: YOLO, dataset: Path, pred_arguments: dict, save_dir: Union
             class_preds = [pred[pred_cls == cfg['class_id']] for pred, pred_cls in zip(preds, pred_class)]
             class_conf = [cf[pred_cls == cfg['class_id']] for cf, pred_cls in zip(conf, pred_class)]
             precision, recall, fp_mm2, confidence = calculate_metrics(
-                class_gt, class_preds, class_conf, patch_size=pred_arguments['imgsz'], margin=cfg['margin']
+                class_gt, class_preds, class_conf, patch_size=patch_size, margin=cfg['margin']
             )
         else:
             precision, recall, fp_mm2, confidence = calculate_metrics(
-                ground_truth, preds, conf, patch_size=pred_arguments['imgsz'], margin=cfg['margin']
+                ground_truth, preds, conf, patch_size=patch_size, margin=cfg['margin']
             )
 
         metrics['precisions'].append(precision)
@@ -278,7 +286,6 @@ def eval_model(model: YOLO, dataset: Path, pred_arguments: dict, save_dir: Union
 
 
 if __name__ == '__main__':
-    import re
     from tqdm import tqdm
 
     models = Path('yolo').rglob('img*ep*yolo*')
