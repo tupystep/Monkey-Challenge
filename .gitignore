@@ -11,6 +11,7 @@ __pycache__/
 
 # Large data
 data
+inference-docker/test
 
 # Ultralytics weights
 yolo/**/weights
