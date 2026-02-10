@@ -8,15 +8,20 @@ from display_annot import draw_patch
 from constants import LYMPHOCYTE_BGR, MONOCYTE_BGR
 
 
-def draw_predictions(patch_path: Path, result: Results) -> np.ndarray:
-    """Function loads patch and draws input predictions."""
+def draw_predictions_on(patch: np.ndarray, result: Results) -> np.ndarray:
+    """Function draws input predictions on loaded patch."""
     boxes = result.cpu().numpy().boxes
-    pred_patch = cv2.imread(str(patch_path))
     for i, box in enumerate(boxes.xyxy):
         color = LYMPHOCYTE_BGR if int(boxes.cls[i]) == 0 else MONOCYTE_BGR
         box = np.round(box).astype(int)
-        cv2.rectangle(pred_patch, tuple(box[:2]), tuple(box[2:]), color=color, thickness=2)
-    return pred_patch
+        cv2.rectangle(patch, tuple(box[:2]), tuple(box[2:]), color=color, thickness=2)
+    return patch
+
+
+def draw_predictions(patch_path: Path, result: Results) -> np.ndarray:
+    """Function loads patch and draws input predictions."""
+    patch = cv2.imread(str(patch_path))
+    return draw_predictions_on(patch, result)
 
 
 def compare_patches(patches: list[np.ndarray], title: str) -> int:
@@ -84,7 +89,6 @@ def compare_boxes(datasets: list[str], draw_dots: bool = True) -> None:
 def compare_nms(dataset: str, model: str, nms: list[float], conf: float) -> None:
     """Function compares model predictions with different iou thresholds for non-maximum suppression."""
     print('Comparing non-maximum suppression thresholds:')
-    print('Patch labels')
     for iou in nms:
         print(f'Predictions with iou={iou}')
 
@@ -92,10 +96,10 @@ def compare_nms(dataset: str, model: str, nms: list[float], conf: float) -> None
     model = YOLO(model)
     while True:
         patch_path = np.random.choice(train_images + val_images)
-        patches = [draw_patch(patch_path)]
+        patches = []
         for iou in nms:
             results = model.predict(patch_path, imgsz=imgsz, conf=conf, max_det=None, agnostic_nms=True, iou=iou, verbose=False)
-            pred_patch = draw_predictions(patch_path, results[0])
+            pred_patch = draw_predictions_on(draw_patch(patch_path, draw_labels=False, draw_annot=True), results[0])
             patches.append(pred_patch)
         title = 'TRAIN ' + patch_path.name if patch_path in train_images else 'VAL ' + patch_path.name
         key = compare_patches(patches, title)
@@ -106,18 +110,17 @@ def compare_nms(dataset: str, model: str, nms: list[float], conf: float) -> None
 def compare_models(dataset: str, models: list[str], nms: float) -> None:
     """Function compares predictions of multiple models."""
     print('Comparing models:')
-    print('Patch labels')
     for model_name in models:
         print(f'Model {model_name}')
 
     imgsz, train_images, val_images = get_patch_split(dataset)
     while True:
         patch_path = np.random.choice(train_images + val_images)
-        patches = [draw_patch(patch_path)]
+        patches = []
         for model_name in models:
             model = YOLO(model_name)
             results = model.predict(patch_path, imgsz=imgsz, conf=0.25, max_det=None, agnostic_nms=True, iou=nms, verbose=False)
-            pred_patch = draw_predictions(patch_path, results[0])
+            pred_patch = draw_predictions_on(draw_patch(patch_path, draw_labels=False, draw_annot=True), results[0])
             patches.append(pred_patch)
         title = 'TRAIN ' + patch_path.name if patch_path in train_images else 'VAL ' + patch_path.name
         key = compare_patches(patches, title)
@@ -126,13 +129,28 @@ def compare_models(dataset: str, models: list[str], nms: float) -> None:
 
 
 if __name__ == '__main__':
+    # Bounding boxe generation
     # compare_boxes(['basic_box/pas-cpg256', 'pure_seg_box/pas-cpg256'])
-    compare_boxes(['basic_box/pas-cpg512', 'pure_seg_box/pas-cpg512', 'pure_seg_box/ihc512'])
-
+    # compare_boxes(['basic_box/pas-cpg512', 'pure_seg_box/pas-cpg512', 'pure_seg_box/ihc512'])
     # compare_boxes(['basic_box/pas-cpg256', 'pure_seg_box/pas-cpg256', 'pure_seg_box/pas-cpg256_pad5',
     #                'pure_seg_box/pas-cpg256_pad10'])
 
-    # compare_nms('basic_box/pas-cpg512', 'yolo/basic_box/img512_ep200_yolo11m/weights/last.pt', [0.7, 0.3, 0.1], conf=0.25)
+    # Experiment 1 - Labels
+    compare_models('basic_box/pas-cpg256', ['yolo/basic_box/img256_ep100_yolo11m/weights/last.pt',
+                                                    'yolo/pure_box/img256_ep100_yolo11m/weights/last.pt',
+                                                    'yolo/seg_box/img256_ep100_yolo11m/weights/last.pt'], nms=0.3)
 
-    # compare_models('seg_box/pas-cpg256', ['yolo/basic_box/default_aug/img256_ep200_yolo11m/weights/last.pt',
-    #                 'yolo/basic_box/img256_ep200_yolo11m/weights/last.pt'], nms=0.7)
+    # Experiment 2 - Padding
+    # compare_models('basic_box/pas-cpg256', ['yolo/pure_box/img256_ep100_yolo11m/weights/last.pt',
+    #                                                 'yolo/pure_box/padding5/img256_ep200_yolo11m/weights/last.pt',
+    #                                                 'yolo/pure_box/padding10/img256_ep200_yolo11m/weights/last.pt',
+    #                                                 'yolo/seg_box/img256_ep100_yolo11m/weights/last.pt',
+    #                                                 'yolo/seg_box/padding5/img256_ep200_yolo11m/weights/last.pt',
+    #                                                 'yolo/seg_box/padding10/img256_ep200_yolo11m/weights/last.pt'], nms=0.3)
+
+    # Experiment 3 - NMS
+    # compare_nms('basic_box/pas-cpg256', 'yolo/basic_box/img256_ep100_yolo11m/weights/last.pt', [0.7, 0.3, 0.1], conf=0.25)
+    # compare_nms('basic_box/pas-cpg256', 'yolo/pure_box/img256_ep100_yolo11m/weights/last.pt', [0.7, 0.3, 0.1], conf=0.25)
+
+    # Experiment 4 - IHC
+    # compare_boxes(['basic_box/pas-cpg256', 'basic_box/ihc256'])
