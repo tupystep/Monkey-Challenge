@@ -27,7 +27,7 @@ formatted_build_info=$(date -d "$build_timestamp" +"%Y%m%d_%H%M%S")
 # Set the output filename with timestamp and build information
 output_filename="${SCRIPT_DIR}/${container_tag}_${formatted_build_info}.tar.gz"
 
-printenv
+echo "Saving container..."
 
 # Save the Docker container and gzip it
 docker save "$container_tag" | gzip -c > "$output_filename"

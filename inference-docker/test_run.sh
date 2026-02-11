@@ -26,8 +26,6 @@ docker build "$SCRIPT_DIR" \
   --platform=linux/amd64 \
   --tag $DOCKER_TAG 2>&1
 
-echo $INPUT_DIR
-
 echo "=+= Doing a forward pass"
 ## Note the extra arguments that are passed here:
 # '--network none'
