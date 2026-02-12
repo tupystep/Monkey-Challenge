@@ -127,6 +127,29 @@ def compare_models(dataset: str, models: list[str], nms: float) -> None:
         if key == ord('q'):
             break
 
+def show_predictions(dataset: str, model_path: str, nms: float) -> None:
+    """Function displays ground truth dot annotations and dot predictions."""
+    print('Showing predictions:\nLeft - ground truth annotations\nRight - model predictions')
+    imgsz, train_images, val_images = get_patch_split(dataset)
+
+    while True:
+        patch_path = np.random.choice(train_images + val_images)
+        annot_patch = draw_patch(patch_path, draw_labels=False)
+        pred_patch = cv2.imread(str(patch_path))
+
+        model = YOLO(model_path)
+        results = model.predict(patch_path, imgsz=imgsz, conf=0.25, max_det=None, agnostic_nms=True, iou=nms, verbose=False)
+        boxes = results[0].cpu().numpy().boxes
+        for i, box in enumerate(boxes.xywh):
+            color = LYMPHOCYTE_BGR if int(boxes.cls[i]) == 0 else MONOCYTE_BGR
+            box = np.round(box).astype(int)
+            cv2.circle(pred_patch, tuple(box[:2]), radius=3, color=color, thickness=-1)
+
+        title = 'TRAIN ' + patch_path.name if patch_path in train_images else 'VAL ' + patch_path.name
+        key = compare_patches([annot_patch, pred_patch], title)
+        if key == ord('q'):
+            break
+
 
 if __name__ == '__main__':
     # Bounding boxe generation
@@ -136,9 +159,9 @@ if __name__ == '__main__':
     #                'pure_seg_box/pas-cpg256_pad10'])
 
     # Experiment 1 - Labels
-    compare_models('basic_box/pas-cpg256', ['yolo/basic_box/img256_ep100_yolo11m/weights/last.pt',
-                                                    'yolo/pure_box/img256_ep100_yolo11m/weights/last.pt',
-                                                    'yolo/seg_box/img256_ep100_yolo11m/weights/last.pt'], nms=0.3)
+    # compare_models('basic_box/pas-cpg256', ['yolo/basic_box/img256_ep100_yolo11m/weights/last.pt',
+    #                                                 'yolo/pure_box/img256_ep100_yolo11m/weights/last.pt',
+    #                                                 'yolo/seg_box/img256_ep100_yolo11m/weights/last.pt'], nms=0.3)
 
     # Experiment 2 - Padding
     # compare_models('basic_box/pas-cpg256', ['yolo/pure_box/img256_ep100_yolo11m/weights/last.pt',
@@ -154,3 +177,6 @@ if __name__ == '__main__':
 
     # Experiment 4 - IHC
     # compare_boxes(['basic_box/pas-cpg256', 'basic_box/ihc256'])
+
+    # Result
+    show_predictions('basic_box/pas-cpg512', 'yolo/basic_box/img512_ep100_yolo11m/weights/last.pt', nms=0.3)
