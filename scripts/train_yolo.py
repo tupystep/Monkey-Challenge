@@ -7,10 +7,10 @@ from evaluate import eval_model
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Script trains a YOLO model')
-    parser.add_argument('--data', type=Path, required=True, help='Path to a dataset defined by a dataset.yaml file')
-    parser.add_argument('--epochs', type=int, required=True, help='Number of epochs to train')
-    parser.add_argument('--imgsz', type=int, required=True, help='Image size os the model used in training, independent of patch size')
-    parser.add_argument('--project', type=str, default='', help='Path to a directory for this run')
+    parser.add_argument('--data', type=Path, required=True, help='Path to a patched dataset defined by a dataset.yaml file')
+    parser.add_argument('--epochs', type=int, required=True, help='Number of epochs')
+    parser.add_argument('--imgsz', type=int, required=True, help='Image size of the model used in training, independent of patch size')
+    parser.add_argument('--project', type=str, default='', help='Path to a directory to save this run into')
     parser.add_argument('--name', type=str, default='', help='Suffix added to the run name')
     parser.add_argument('--model', type=str, default='yolo11m.pt', help='Model name or a path to its weights')
     parser.add_argument('--resume', type=bool, default=False)
